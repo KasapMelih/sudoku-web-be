@@ -1,0 +1,111 @@
+JWT TABANLI YETKİLENDİRME SİSTEMİ OLUŞTURMA
+
+Yetkilendirme sistemi oluştururken dikkat edilmesi gereken bazı önemli noktalar vardır. Bunlardan biri, JWT (JSON Web Token) için güvenli bir secret key kullanmak ve token'ları doğru yönetmektir.
+
+------------------------------------------------------------
+JWT NEDİR?
+------------------------------------------------------------
+JWT (JSON Web Token), kimlik doğrulama ve veri güvenliği için kullanılan bir güvenlik standardıdır. Kullanıcı kimliğini doğrulamak ve bilgi alışverişini güvenli hale getirmek amacıyla kullanılır.
+
+JWT'nin 3 ana bileşeni vardır:
+1. **Header (Başlık)**: Algoritma ve token türü hakkında bilgi içerir.
+   Örnek: `{ "alg": "HS256", "typ": "JWT" }`
+   
+2. **Payload (Yük)**: Kullanıcı bilgileri ve ek verileri içerir.
+   Örnek: `{ "id": "123", "email": "user@example.com", "role": "admin" }`
+   
+3. **Signature (İmza)**: Token'ın güvenliğini sağlar ve değiştirilmediğini doğrular.
+   Örnek: `HMACSHA256( base64UrlEncode(header) + "." + base64UrlEncode(payload), secret )`
+
+------------------------------------------------------------
+YETKİLENDİRME SİSTEMİNİN TEMEL ADIMLARI
+------------------------------------------------------------
+
+1. **Kullanıcı Kayıt (Signup)**
+2. **Kullanıcı Girişi (Login)**
+3. **Kullanıcı Bilgilerini Getirme (Me Route)**
+4. **Access Token Yenileme**
+5. **Refresh Token Yenileme**
+
+------------------------------------------------------------
+ADIM 1: KULLANICI KAYIT (SIGNUP ROUTE)
+------------------------------------------------------------
+- Kullanıcı bilgileri (email, şifre vb.) request body’den alınır.
+- Şifre, güvenli bir şekilde hash’lenir (bcrypt vb.).
+- Kullanıcı veritabanına kaydedilir.
+- Başarıyla kayıt tamamlandıysa uygun bir yanıt döndürülür.
+
+**ENDPOINT:** `POST /signup`  
+**Body:**  
+`{ "email": "user@example.com", "password": "password123" }`  
+**Response:**  
+`{ "message": "Kullanıcı başarıyla oluşturuldu." }`
+
+------------------------------------------------------------
+ADIM 2: KULLANICI GİRİŞİ (LOGIN ROUTE)
+------------------------------------------------------------
+- Kullanıcıdan email ve şifre alınır.
+- Email adresine sahip bir kullanıcı olup olmadığı kontrol edilir.
+- Girilen şifre, hash’lenmiş şifre ile karşılaştırılır.
+- Şifre doğruysa, JWT ile bir access token ve refresh token oluşturulur.
+- Bu token’lar HTTP-only cookie olarak client’a gönderilir.
+
+**ENDPOINT:** `POST /login`  
+**Body:**  
+`{ "email": "user@example.com", "password": "password123" }`  
+**Response:**  
+`{ "message": "Giriş başarılı", "accessToken": "xxx", "refreshToken": "yyy" }`  
+
+**Not:** Eğer email veya şifre hatalıysa uygun bir hata mesajı döndürülmelidir.
+
+------------------------------------------------------------
+ADIM 3: KULLANICI BİLGİLERİNİ GETİRME (ME ROUTE)
+------------------------------------------------------------
+- Kullanıcının access token’ı request headers üzerinden alınır.
+- Token geçerliyse (verify edilirse), içinden kullanıcı ID’si okunur.
+- Bu ID ile veritabanından kullanıcı bilgileri alınır ve döndürülür.
+
+**ENDPOINT:** `GET /me`  
+**Headers:**  
+`{ "Authorization": "Bearer ACCESS_TOKEN" }`  
+**Response:**  
+`{ "id": "123", "email": "user@example.com", "role": "admin" }`  
+
+**Not:** Eğer token geçerli değilse veya eksikse, `401 Unauthorized` hatası döndürülmelidir.
+
+------------------------------------------------------------
+ADIM 4: ACCESS TOKEN YENİLEME (REFRESH ACCESS TOKEN)
+------------------------------------------------------------
+- Refresh token, HTTP-only cookie veya request body üzerinden alınır.
+- Token geçerli mi diye kontrol edilir.
+- Geçerliyse, yeni bir access token üretilir ve döndürülür.
+
+**ENDPOINT:** `POST /refresh-access-token`  
+**Body:**  
+`{ "refreshToken": "yyy" }`  
+**Response:**  
+`{ "accessToken": "new-access-token" }`
+
+------------------------------------------------------------
+ADIM 5: REFRESH TOKEN YENİLEME (REFRESH REFRESH TOKEN)
+------------------------------------------------------------
+- Kullanıcıdan eski refresh token alınır.
+- Token geçerli mi kontrol edilir.
+- Geçerliyse, yeni bir refresh token oluşturulup döndürülür.
+
+**ENDPOINT:** `POST /refresh-refresh-token`  
+**Body:**  
+`{ "refreshToken": "yyy" }`  
+**Response:**  
+`{ "refreshToken": "new-refresh-token" }`
+
+**Not:** Eğer refresh token geçerli değilse veya süresi dolmuşsa, kullanıcıdan tekrar giriş yapması istenir.
+
+------------------------------------------------------------
+ÖZET:
+------------------------------------------------------------
+- **Kullanıcı kayıt (/signup):** Bilgiler alınır, şifre hash’lenir ve kaydedilir.
+- **Kullanıcı girişi (/login):** Email ve şifre doğrulanır, access & refresh token oluşturulur.
+- **Me route (/me):** Kullanıcının kimliği doğrulanarak bilgileri döndürülür.
+- **Access token yenileme (/refresh-access-token):** Süresi dolmuş access token’ı yeniler.
+- **Refresh token yenileme (/refresh-refresh-token):** Refresh token’ı yenileyerek yeni bir refresh token oluşturur.

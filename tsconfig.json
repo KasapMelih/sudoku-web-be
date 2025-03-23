@@ -1,0 +1,60 @@
+{
+  "compilerOptions": {
+    // ES modülleriyle CommonJS arasında uyumluluğu artırır (default false).
+    "esModuleInterop": true,
+
+    // node_modules içindeki tip dosyalarını kontrol etmeyi atlar, derlemeyi hızlandırır.
+    "skipLibCheck": true,
+
+    // Derleme sonucunun hedefleyeceği JavaScript sürümünü belirler (ES2022).
+    "target": "es2022",
+
+    // Projeye .js dosyalarının dahil edilmesine izin verir.
+    "allowJs": true,
+
+    // JSON dosyalarının doğrudan TypeScript içinde import edilmesine izin verir.
+    "resolveJsonModule": true,
+
+    // TypeScript'in modülleri nasıl algılayacağını belirler ("force" ile zorunlu hale gelir).
+    "moduleDetection": "force",
+
+    // Her dosyanın bağımsız bir modül olarak ele alınmasını sağlar.
+    "isolatedModules": true,
+
+    // ES modüllerinde import/export ifadelerini değiştirmeden bırakır.
+    "verbatimModuleSyntax": false,
+
+    // TypeScript'in tüm sıkı denetim modlarını etkinleştirir.
+    "strict": true,
+
+    // Bir nesnenin indeksli erişiminde olmayan anahtarları kullanmayı engeller.
+    "noUncheckedIndexedAccess": true,
+
+    // Üst sınıflardan miras alınan metodları override ederken "override" kullanmayı zorunlu kılar.
+    "noImplicitOverride": true,
+
+    // Node.js'in en yeni ES modül sistemini kullanmasını sağlar.
+    "module": "NodeNext",
+
+    // Derlenen dosyaların çıkış dizinini belirler (dist klasörüne koyar).
+    "outDir": "dist",
+
+    // Kaynak haritalarını kapatır (sourceMap false ise hata ayıklamak zorlaşabilir).
+    "sourceMap": false,
+
+    // .d.ts tip tanım dosyalarının oluşturulmasını sağlar (kütüphaneler için önemli).
+    "declaration": true,
+
+    // Monorepo veya bağımlı projeler için kullanılır, incremental build'e imkan tanır.
+    "composite": true,
+
+    // .d.ts dosyaları için kaynak harita (source map) oluşturur.
+    "declarationMap": true,
+
+    // TypeScript'in dosya üretmesini engeller, sadece tip kontrolü yapmasını sağlar.
+    "noEmit": false,
+
+    // Projede kullanılacak JavaScript özelliklerini belirler (sadece ES2022 API'lerini kullanır).
+    "lib": ["es2022"]
+  }
+}
