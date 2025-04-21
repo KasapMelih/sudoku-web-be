@@ -5,6 +5,7 @@ import logger from "./middlewares/logger";
 
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { authRouter } from "./modules/routes";
 
 const app: Express = express();
 
@@ -19,6 +20,7 @@ app.use(cors(corsOptions));
 
 // logger middleware
 app.use(logger);
+app.use("/auth", authRouter);
 
 app.use(cookieParser());
 

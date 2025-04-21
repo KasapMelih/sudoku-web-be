@@ -15,4 +15,34 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
         
+enum Role {
+  USER
+  ADMIN
+}
+        
 
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  fullName  String
+  userName  String    @unique
+  password  String
+  points    Int       @default(0)
+  games     GameScore[]
+  createdAt DateTime  @default(now())
+}
+
+model GameScore {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  game      Game
+  score     Int
+  createdAt DateTime @default(now())
+}
+
+enum Game {
+  SUDOKU
+  MINESWEEPER
+  TICTACTOE
+}
